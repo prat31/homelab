@@ -1,0 +1,12 @@
+# ===========================================
+# Homelab Master Docker Compose
+# ===========================================
+# This file orchestrates all service modules
+# Run from repo root: docker compose up -d
+# ===========================================
+
+include:
+  - networking/docker-compose.yml  # Traefik reverse proxy (must be first)
+  - monitoring/docker-compose.yml
+  # - media/docker-compose.yml        # Future
+

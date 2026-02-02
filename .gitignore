@@ -1,0 +1,27 @@
+# Secrets - NEVER commit
+.env
+secrets/
+
+# Traefik Let's Encrypt certificates (if mounted locally)
+networking/traefik/acme.json
+networking/traefik/letsencrypt/
+
+# Docker
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+.idea/
+.vscode/
+*.code-workspace
+
+# Grafana data (if mounted locally)
+monitoring/grafana/data/
+
+# Prometheus data (if mounted locally)
+monitoring/prometheus/data/
