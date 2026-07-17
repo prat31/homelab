@@ -1,0 +1,21 @@
+services:
+  homarr:
+    image: ghcr.io/homarr-labs/homarr:v1.70.0
+    container_name: homelab-homarr
+    restart: unless-stopped
+    volumes:
+      - /Users/prat/.docker/run/docker.sock:/var/run/docker.sock:ro
+      - ../../data/homarr:/appdata
+    environment:
+      - SECRET_ENCRYPTION_KEY=${HOMARR_SECRET_ENCRYPTION_KEY}
+    ports:
+      - 7575:7575
+    networks:
+      - homelab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homarr.rule=Host(`dashboard.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.homarr.entrypoints=websecure"
+      - "traefik.http.routers.homarr.tls=true"
+      - "traefik.http.routers.homarr.tls.certresolver=letsencrypt"
+      - "traefik.http.services.homarr.loadbalancer.server.port=7575"

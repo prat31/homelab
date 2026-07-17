@@ -1,0 +1,31 @@
+services:
+  beszel:
+    image: henrygd/beszel:0.18.7
+    container_name: homelab-beszel
+    restart: unless-stopped
+    ports:
+      - 8090:8090
+    volumes:
+      - ../../data/beszel:/beszel_data
+    networks:
+      - homelab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.beszel.rule=Host(`beszel.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.beszel.entrypoints=websecure"
+      - "traefik.http.routers.beszel.tls=true"
+      - "traefik.http.routers.beszel.tls.certresolver=letsencrypt"
+      - "traefik.http.services.beszel.loadbalancer.server.port=8090"
+
+  beszel-agent:
+    image: henrygd/beszel-agent:0.18.7
+    container_name: homelab-beszel-agent
+    restart: unless-stopped
+    volumes:
+      - /Users/prat/.docker/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - HUB_URL=http://homelab-beszel:8090
+      - TOKEN=${BESZEL_AGENT_TOKEN}
+      - KEY=${BESZEL_AGENT_KEY}
+    networks:
+      - homelab

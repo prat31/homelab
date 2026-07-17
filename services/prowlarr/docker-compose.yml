@@ -1,0 +1,25 @@
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:2.4.0
+    container_name: homelab-prowlarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - PROWLARR__PROXY__ENABLED=True
+      - PROWLARR__PROXY__PROXYTYPE=0
+      - PROWLARR__PROXY__HOSTNAME=homelab-gluetun
+      - PROWLARR__PROXY__PORT=8888
+      - PROWLARR__PROXY__BYPASSPROXYFORLOCALADDRESSES=True
+    volumes:
+      - ../../data/prowlarr:/config
+    networks:
+      - homelab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.prowlarr.entrypoints=websecure"
+      - "traefik.http.routers.prowlarr.tls=true"
+      - "traefik.http.routers.prowlarr.tls.certresolver=letsencrypt"
+      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"

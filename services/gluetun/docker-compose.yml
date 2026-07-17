@@ -1,0 +1,24 @@
+services:
+  gluetun:
+    image: qmcgaw/gluetun:v3.40
+    container_name: homelab-gluetun
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - VPN_SERVICE_PROVIDER=pia
+      - VPN_TYPE=openvpn
+      - OPENVPN_USER=${PIA_USERNAME}
+      - OPENVPN_PASSWORD=${PIA_PASSWORD}
+      - SERVER_REGIONS=${PIA_REGION}
+      - HTTPPROXY=on
+      - HTTPPROXY_PORT=8888
+    ports:
+      - 8888:8888
+    networks:
+      - homelab
+    healthcheck:
+      test: ["CMD", "/gluetun-entrypoint", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

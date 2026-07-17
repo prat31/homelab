@@ -16,16 +16,18 @@ When adding a new service, follow these conventions strictly:
 ## 3. Service Directory Structure
 ```
 services/<service-name>/
-├── Dockerfile              # (optional, only if custom build needed)
-├── config/                 # config files mounted into container
+├── docker-compose.yml       # service definition (included by root compose)
+├── Dockerfile               # (optional, only if custom build needed)
+├── config/                  # config files mounted into container
 │   └── ...
 └── (any service-specific files)
 ```
 
 ## 4. Global Docker Compose
-- A single `docker-compose.yml` at repo root.
-- Every service gets a top-level `services:` entry.
+- A single `docker-compose.yml` at repo root uses `include:` to pull in each service's compose file from `services/<name>/docker-compose.yml`.
+- The root compose also defines the `homelab` network.
 - Run everything with: `docker compose up -d`
+- **Path convention in service compose files:** relative paths resolve relative to the service's own directory. Use `../../data/<name>/` to reference the repo-root `data/` directory, and `./` for files in the same service directory (e.g., config files).
 - Container names follow the pattern `homelab-<service>`.
 - If a service has a dependent service (e.g., Redis for an app), name it `homelab-<app>-<dependency>` (e.g., `homelab-myapp-redis`).
 
