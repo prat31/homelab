@@ -1,13 +1,7 @@
-# ===========================================
-# Traefik Static Configuration
-# ===========================================
-
-# API and Dashboard
 api:
   dashboard: true
-  insecure: false  # Dashboard behind auth
+  insecure: false
 
-# Entrypoints
 entryPoints:
   web:
     address: ":80"
@@ -22,12 +16,7 @@ entryPoints:
     http:
       tls:
         certResolver: letsencrypt
-        domains:
-          - main: "homelab.pratcode.dev"
-            sans:
-              - "*.homelab.pratcode.dev"
 
-# Providers
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
@@ -37,12 +26,10 @@ providers:
     directory: /etc/traefik/dynamic
     watch: true
 
-# Certificate Resolvers
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: "${ACME_EMAIL}"
-      storage: /letsencrypt/acme.json
+      storage: /data/acme.json
       dnsChallenge:
         provider: cloudflare
         delayBeforeCheck: 10
@@ -50,10 +37,9 @@ certificatesResolvers:
           - "1.1.1.1:53"
           - "8.8.8.8:53"
 
-# Logging
 log:
   level: INFO
 
 accessLog:
-  filePath: /var/log/traefik/access.log
+  filePath: /data/access.log
   bufferingSize: 100

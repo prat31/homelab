@@ -1,12 +1,248 @@
-# ===========================================
-# Homelab Master Docker Compose
-# ===========================================
-# This file orchestrates all service modules
-# Run from repo root: docker compose up -d
-# ===========================================
+services:
+  traefik:
+    image: traefik:v3.7
+    container_name: homelab-traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - CF_API_EMAIL=${CLOUDFLARE_EMAIL}
+      - CF_DNS_API_TOKEN=${CLOUDFLARE_DNS_API_TOKEN}
+      - ACME_EMAIL=${ACME_EMAIL}
+      - DOMAIN_BASE=${DOMAIN_BASE}
+      - TRAEFIK_CERTIFICATESRESOLVERS_LETSENCRYPT_ACME_EMAIL=${ACME_EMAIL}
+      - TRAEFIK_ENTRYPOINTS_WEBSECURE_HTTP_TLS_DOMAINS[0]_MAIN=${DOMAIN_BASE}
+      - TRAEFIK_ENTRYPOINTS_WEBSECURE_HTTP_TLS_DOMAINS[0]_SANS[0]=*.${DOMAIN_BASE}
+    volumes:
+      - /Users/prat/.docker/run/docker.sock:/var/run/docker.sock:ro
+      - ./services/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./services/traefik/dynamic:/etc/traefik/dynamic:ro
+      - ./data/traefik:/data
+    networks:
+      - homelab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls=true"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.middlewares=traefik-auth"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_AUTH}"
 
-include:
-  - networking/docker-compose.yml  # Traefik reverse proxy (must be first)
-  - monitoring/docker-compose.yml
-  # - media/docker-compose.yml        # Future
+  gluetun:
+    image: qmcgaw/gluetun:v3.40
+    container_name: homelab-gluetun
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - VPN_SERVICE_PROVIDER=pia
+      - VPN_TYPE=openvpn
+      - OPENVPN_USER=${PIA_USERNAME}
+      - OPENVPN_PASSWORD=${PIA_PASSWORD}
+      - SERVER_REGIONS=${PIA_REGION}
+      - HTTPPROXY=on
+      - HTTPPROXY_PORT=8888
+    ports:
+      - 8888:8888
+    networks:
+      - homelab
+    healthcheck:
+      test: ["CMD", "/gluetun-entrypoint", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:5.2.3
+    container_name: homelab-qbittorrent
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - WEBUI_PORT=8080
+    ports:
+      - 8080:8080
+      - 6881:6881
+      - 6881:6881/udp
+    volumes:
+      - ./data/qbittorrent:/config
+      - ./data/media/downloads:/downloads
+    networks:
+      - homelab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.qbittorrent.entrypoints=websecure"
+      - "traefik.http.routers.qbittorrent.tls=true"
+      - "traefik.http.routers.qbittorrent.tls.certresolver=letsencrypt"
+      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:2.4.0
+    container_name: homelab-prowlarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - PROWLARR__PROXY__ENABLED=True
+      - PROWLARR__PROXY__PROXYTYPE=0
+      - PROWLARR__PROXY__HOSTNAME=homelab-gluetun
+      - PROWLARR__PROXY__PORT=8888
+      - PROWLARR__PROXY__BYPASSPROXYFORLOCALADDRESSES=True
+    volumes:
+      - ./data/prowlarr:/config
+    networks:
+      - homelab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.prowlarr.entrypoints=websecure"
+      - "traefik.http.routers.prowlarr.tls=true"
+      - "traefik.http.routers.prowlarr.tls.certresolver=letsencrypt"
+      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:6.3.0
+    container_name: homelab-radarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./data/radarr:/config
+      - ./data/media/movies:/movies
+      - ./data/media/downloads:/downloads
+    networks:
+      - homelab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.radarr.entrypoints=websecure"
+      - "traefik.http.routers.radarr.tls=true"
+      - "traefik.http.routers.radarr.tls.certresolver=letsencrypt"
+      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:4.0.19
+    container_name: homelab-sonarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./data/sonarr:/config
+      - ./data/media/tv:/tv
+      - ./data/media/downloads:/downloads
+    networks:
+      - homelab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.sonarr.entrypoints=websecure"
+      - "traefik.http.routers.sonarr.tls=true"
+      - "traefik.http.routers.sonarr.tls.certresolver=letsencrypt"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+
+  jellyfin:
+    image: jellyfin/jellyfin:10.10
+    container_name: homelab-jellyfin
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./data/jellyfin:/config
+      - ./data/media/movies:/data/movies
+      - ./data/media/tv:/data/tv
+    networks:
+      - homelab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.jellyfin.entrypoints=websecure"
+      - "traefik.http.routers.jellyfin.tls=true"
+      - "traefik.http.routers.jellyfin.tls.certresolver=letsencrypt"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+
+  homarr:
+    image: ghcr.io/homarr-labs/homarr:v1.70.0
+    container_name: homelab-homarr
+    restart: unless-stopped
+    volumes:
+      - /Users/prat/.docker/run/docker.sock:/var/run/docker.sock:ro
+      - ./data/homarr:/appdata
+    environment:
+      - SECRET_ENCRYPTION_KEY=${HOMARR_SECRET_ENCRYPTION_KEY}
+    ports:
+      - 7575:7575
+    networks:
+      - homelab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homarr.rule=Host(`dashboard.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.homarr.entrypoints=websecure"
+      - "traefik.http.routers.homarr.tls=true"
+      - "traefik.http.routers.homarr.tls.certresolver=letsencrypt"
+      - "traefik.http.services.homarr.loadbalancer.server.port=7575"
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: homelab-uptime-kuma
+    restart: unless-stopped
+    volumes:
+      - ./data/uptime-kuma:/app/data
+    networks:
+      - homelab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uptime-kuma.rule=Host(`uptime.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
+      - "traefik.http.routers.uptime-kuma.tls=true"
+      - "traefik.http.routers.uptime-kuma.tls.certresolver=letsencrypt"
+      - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
+
+  beszel:
+    image: henrygd/beszel:0.18.7
+    container_name: homelab-beszel
+    restart: unless-stopped
+    ports:
+      - 8090:8090
+    volumes:
+      - ./data/beszel:/beszel_data
+    networks:
+      - homelab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.beszel.rule=Host(`beszel.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.beszel.entrypoints=websecure"
+      - "traefik.http.routers.beszel.tls=true"
+      - "traefik.http.routers.beszel.tls.certresolver=letsencrypt"
+      - "traefik.http.services.beszel.loadbalancer.server.port=8090"
+
+  beszel-agent:
+    image: henrygd/beszel-agent:0.18.7
+    container_name: homelab-beszel-agent
+    restart: unless-stopped
+    volumes:
+      - /Users/prat/.docker/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - HUB_URL=http://homelab-beszel:8090
+      - TOKEN=${BESZEL_AGENT_TOKEN}
+      - KEY=${BESZEL_AGENT_KEY}
+    networks:
+      - homelab
+
+networks:
+  homelab:
+    name: homelab
+    external: false
