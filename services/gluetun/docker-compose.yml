@@ -15,6 +15,9 @@ services:
       - HTTPPROXY_PORT=8888
     ports:
       - 8888:8888
+      - "8000:8000/tcp"
+    volumes:
+      - ./config.toml:/gluetun/auth/config.toml:ro
     networks:
       - homelab
     healthcheck:

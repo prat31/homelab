@@ -1,0 +1,6 @@
+[[roles]]
+name = "default"
+routes = ["GET /v1/vpn/status", "GET /v1/vpn/settings", "GET /v1/publicip/ip", "GET /v1/dns/status"]
+auth = "basic"
+username = "homarr"
+password = "homarr_gluetun_2026"

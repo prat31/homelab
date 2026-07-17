@@ -10,6 +10,7 @@ include:
   - ./services/uptime-kuma/docker-compose.yml
   - ./services/beszel/docker-compose.yml
   - ./services/immich/docker-compose.yml
+  - ./services/n8n/docker-compose.yml
 
 networks:
   homelab:
