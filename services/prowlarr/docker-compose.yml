@@ -7,11 +7,6 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-      - PROWLARR__PROXY__ENABLED=True
-      - PROWLARR__PROXY__PROXYTYPE=0
-      - PROWLARR__PROXY__HOSTNAME=homelab-gluetun
-      - PROWLARR__PROXY__PORT=8888
-      - PROWLARR__PROXY__BYPASSPROXYFORLOCALADDRESSES=True
     volumes:
       - ../../data/prowlarr:/config
     networks:

@@ -20,12 +20,15 @@ services:
   beszel-agent:
     image: henrygd/beszel-agent:0.18.7
     container_name: homelab-beszel-agent
+    hostname: ${BESZEL_SYSTEM_NAME:-Homelab}
     restart: unless-stopped
     volumes:
       - /Users/prat/.docker/run/docker.sock:/var/run/docker.sock:ro
+      - ../../data/beszel-agent:/var/lib/beszel-agent
     environment:
       - HUB_URL=http://homelab-beszel:8090
       - TOKEN=${BESZEL_AGENT_TOKEN}
       - KEY=${BESZEL_AGENT_KEY}
+      - SYSTEM_NAME=${BESZEL_SYSTEM_NAME:-Homelab}
     networks:
       - homelab

@@ -47,6 +47,7 @@ data/<service-name>/
 
 ### Currently Deployed Shared Services
 - **Gluetun** (`homelab-gluetun`) — VPN tunnel via PIA, exposes HTTP proxy at `homelab-gluetun:8888`. Used by qBittorrent (network mode) and Prowlarr (HTTP proxy for indexer queries).
+- **Prowlarr tag-based VPN routing** — Prowlarr's global proxy is OFF. An `Http` IndexerProxy named "Gluetun" (host `homelab-gluetun:8888`) is tagged with the `vpn` tag (tag id `1`). Only indexers that carry the `vpn` tag route through Gluetun; untagged indexers use the direct connection. To make a new indexer use the VPN, add the `vpn` tag when creating it (UI: indexer editor → Tags → `vpn`, or POST `/api/v1/indexer` with `"tags":[1]`).
 - **Uptime Kuma** (`homelab-uptime-kuma`) — Service monitoring at `https://uptime.homelab.pratcode.dev`. Every publicly-accessible service must have an HTTP monitor added. Credentials in `.env` (`UPTIME_KUMA_USERNAME`, `UPTIME_KUMA_PASSWORD`, `UPTIME_KUMA_API_KEY`).
 
 ## 7. Service Integrations

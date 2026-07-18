@@ -6,6 +6,7 @@ secrets/
 data/
 !data/.gitkeep
 !data/*/.gitkeep
+data
 
 # OS
 .DS_Store

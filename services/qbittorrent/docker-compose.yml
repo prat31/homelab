@@ -14,7 +14,7 @@ services:
       - 6881:6881/udp
     volumes:
       - ../../data/qbittorrent:/config
-      - ../../data/media/downloads:/downloads
+      - ../../data/media:/data/media
     networks:
       - homelab
     labels:

@@ -9,8 +9,7 @@ services:
       - TZ=${TZ}
     volumes:
       - ../../data/radarr:/config
-      - ../../data/media/movies:/movies
-      - ../../data/media/downloads:/downloads
+      - ../../data/media:/data/media
     networks:
       - homelab
     labels:
