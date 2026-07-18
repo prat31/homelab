@@ -11,6 +11,7 @@ include:
   - ./services/beszel/docker-compose.yml
   - ./services/immich/docker-compose.yml
   - ./services/n8n/docker-compose.yml
+  - ./services/kopia/docker-compose.yml
 
 networks:
   homelab:

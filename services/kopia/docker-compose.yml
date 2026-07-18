@@ -1,0 +1,39 @@
+services:
+  kopia:
+    image: kopia/kopia:0.23.1
+    container_name: homelab-kopia
+    restart: unless-stopped
+    hostname: homelab-kopia
+    environment:
+      # Repository / R2 backend
+      - KOPIA_R2_BUCKET=${KOPIA_R2_BUCKET}
+      - KOPIA_R2_ENDPOINT=${KOPIA_R2_ENDPOINT}
+      - KOPIA_R2_ACCESS_KEY_ID=${KOPIA_R2_ACCESS_KEY_ID}
+      - KOPIA_R2_SECRET_ACCESS_KEY=${KOPIA_R2_SECRET_ACCESS_KEY}
+      - KOPIA_REPOSITORY_PASSWORD=${KOPIA_REPOSITORY_PASSWORD}
+      # Web UI basic auth
+      - KOPIA_SERVER_USERNAME=${KOPIA_SERVER_USERNAME}
+      - KOPIA_SERVER_PASSWORD=${KOPIA_SERVER_PASSWORD}
+      - TZ=${TZ}
+      # Persist cache/logs under the mounted config dir
+      - KOPIA_CACHE_DIRECTORY=/app/cache
+      - KOPIA_LOG_DIR=/app/logs
+    entrypoint: ["/bin/sh", "/app/entrypoint.sh"]
+    volumes:
+      # Entrypoint script
+      - ./entrypoint.sh:/app/entrypoint.sh:ro
+      # Kopia repository config + cache + logs (persistent)
+      - ../../data/kopia/config:/app/config
+      - ../../data/kopia/cache:/app/cache
+      - ../../data/kopia/logs:/app/logs
+      # The data directory to back up (read-only)
+      - ../../data:/data:ro
+    networks:
+      - homelab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kopia.rule=Host(`kopia.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.kopia.entrypoints=websecure"
+      - "traefik.http.routers.kopia.tls=true"
+      - "traefik.http.routers.kopia.tls.certresolver=letsencrypt"
+      - "traefik.http.services.kopia.loadbalancer.server.port=51515"

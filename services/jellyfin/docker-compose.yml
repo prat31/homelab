@@ -9,8 +9,8 @@ services:
       - TZ=${TZ}
     volumes:
       - ../../data/jellyfin:/config
-      - ../../data/media/movies:/data/movies
-      - ../../data/media/tv:/data/tv
+      - ../../data/jellyfin/cache:/cache
+      - ../../data/media:/data/media
     networks:
       - homelab
     labels:
