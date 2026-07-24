@@ -8,8 +8,8 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
     volumes:
-      - ../../data/radarr:/config
-      - ../../data/media:/data/media
+      - /Volumes/homelab_data/homelab/data/radarr:/config
+      - /Volumes/homelab_data/homelab/data/media:/data/media
     networks:
       - homelab
     labels:

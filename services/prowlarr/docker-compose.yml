@@ -8,7 +8,7 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
     volumes:
-      - ../../data/prowlarr:/config
+      - /Volumes/homelab_data/homelab/data/prowlarr:/config
     networks:
       - homelab
     labels:

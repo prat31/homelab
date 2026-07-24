@@ -20,7 +20,7 @@ services:
       - /Users/prat/.docker/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
       - ./dynamic:/etc/traefik/dynamic:ro
-      - ../../data/traefik:/data
+      - /Volumes/homelab_data/homelab/data/traefik:/data
     networks:
       - homelab
     labels:

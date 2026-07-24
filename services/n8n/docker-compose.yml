@@ -21,7 +21,7 @@ services:
       - GENERIC_TIMEZONE=${TZ}
       - N8N_SECURE_COOKIE=false
     volumes:
-      - ../../data/n8n/files:/data
+      - /Volumes/homelab_data/homelab/data/n8n/files:/data
     depends_on:
       n8n-postgres:
         condition: service_healthy
@@ -44,7 +44,7 @@ services:
       - POSTGRES_USER=${N8N_POSTGRES_USER}
       - POSTGRES_PASSWORD=${N8N_POSTGRES_PASSWORD}
     volumes:
-      - ../../data/n8n/database:/var/lib/postgresql/data
+      - /Volumes/homelab_data/homelab/data/n8n/database:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${N8N_POSTGRES_USER} -d ${N8N_POSTGRES_DB}"]
       interval: 10s

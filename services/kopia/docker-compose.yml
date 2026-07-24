@@ -23,9 +23,9 @@ services:
       # Entrypoint script
       - ./entrypoint.sh:/app/entrypoint.sh:ro
       # Kopia repository config + cache + logs (persistent)
-      - ../../data/kopia/config:/app/config
-      - ../../data/kopia/cache:/app/cache
-      - ../../data/kopia/logs:/app/logs
+      - /Volumes/homelab_data/homelab/data/kopia/config:/app/config
+      - /Volumes/homelab_data/homelab/data/kopia/cache:/app/cache
+      - /Volumes/homelab_data/homelab/data/kopia/logs:/app/logs
       # The data directory to back up (read-only)
       - ../../data:/data:ro
     networks:

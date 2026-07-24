@@ -30,7 +30,7 @@ services:
     container_name: homelab-immich-ml
     restart: always
     volumes:
-      - ../../data/immich/model-cache:/cache
+      - /Volumes/homelab_data/homelab/data/immich/model-cache:/cache
     env_file:
       - ../../.env
     networks:

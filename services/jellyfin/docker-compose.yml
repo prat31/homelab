@@ -8,9 +8,9 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
     volumes:
-      - ../../data/jellyfin:/config
-      - ../../data/jellyfin/cache:/cache
-      - ../../data/media:/data/media
+      - /Volumes/homelab_data/homelab/data/jellyfin:/config
+      - /Volumes/homelab_data/homelab/data/jellyfin/cache:/cache
+      - /Volumes/homelab_data/homelab/data/media:/data/media
     networks:
       - homelab
     labels:

@@ -6,7 +6,7 @@ services:
     ports:
       - 8090:8090
     volumes:
-      - ../../data/beszel:/beszel_data
+      - /Volumes/homelab_data/homelab/data/beszel:/beszel_data
     networks:
       - homelab
     labels:
@@ -24,7 +24,7 @@ services:
     restart: unless-stopped
     volumes:
       - /Users/prat/.docker/run/docker.sock:/var/run/docker.sock:ro
-      - ../../data/beszel-agent:/var/lib/beszel-agent
+      - /Volumes/homelab_data/homelab/data/beszel-agent:/var/lib/beszel-agent
     environment:
       - HUB_URL=http://homelab-beszel:8090
       - TOKEN=${BESZEL_AGENT_TOKEN}
