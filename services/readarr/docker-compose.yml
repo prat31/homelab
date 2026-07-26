@@ -1,0 +1,52 @@
+services:
+  readarr:
+    image: lscr.io/linuxserver/readarr:nightly-0.4.19.2811-ls400
+    container_name: homelab-readarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - /Volumes/homelab_data/homelab/data/readarr:/config
+      - /Volumes/homelab_data/homelab/data/media:/data/media
+      # Trust self-signed CA for Goodreads/bookinfo interception
+      - ./metadata-scraper/certs/ca.crt:/usr/local/share/ca-certificates/homelab-ca.crt:ro
+      - ./config/update-ca.sh:/custom-cont-init.d/update-ca.sh:ro
+    networks:
+      - homelab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.readarr.rule=Host(`readarr.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.readarr.entrypoints=websecure"
+      - "traefik.http.routers.readarr.tls=true"
+      - "traefik.http.routers.readarr.tls.certresolver=letsencrypt"
+      - "traefik.http.services.readarr.loadbalancer.server.port=8787"
+
+  # qBittorrent auth-compat proxy for Readarr (rewrite v5 204 -> 200 "Ok.")
+  # Remove once Readarr merges the qBittorrent v5 auth fix upstream.
+  qbit-proxy:
+    image: python:3.12.11-alpine3.22
+    container_name: homelab-readarr-qbit-proxy
+    restart: unless-stopped
+    volumes:
+      - ./config/qbit-proxy.py:/app/qbit-proxy.py:ro
+    command: ["python", "/app/qbit-proxy.py"]
+    networks:
+      - homelab
+
+  # Readarr metadata scraper — substitutes dead api.bookinfo.club by scraping Goodreads.
+  # Intercepts both api.bookinfo.club and www.goodreads.com (caches autocomplete results).
+  # Remove once Readarr migrates to OpenLibrary (issue #3486) or bookinfo.club returns.
+  metadata-scraper:
+    build: ./metadata-scraper
+    image: homelab-readarr-metadata-scraper:local
+    container_name: homelab-readarr-metadata-scraper
+    restart: unless-stopped
+    volumes:
+      - /Volumes/homelab_data/homelab/data/readarr-scraper-cache:/tmp
+    networks:
+      homelab:
+        aliases:
+          - api.bookinfo.club
+          - www.goodreads.com

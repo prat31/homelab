@@ -5,6 +5,7 @@ include:
   - ./services/prowlarr/docker-compose.yml
   - ./services/radarr/docker-compose.yml
   - ./services/sonarr/docker-compose.yml
+  - ./services/readarr/docker-compose.yml
   - ./services/jellyfin/docker-compose.yml
   - ./services/homarr/docker-compose.yml
   - ./services/uptime-kuma/docker-compose.yml
