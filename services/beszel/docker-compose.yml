@@ -15,6 +15,7 @@ services:
       - "traefik.http.routers.beszel.entrypoints=websecure"
       - "traefik.http.routers.beszel.tls=true"
       - "traefik.http.routers.beszel.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.beszel.middlewares=crowdsec"
       - "traefik.http.services.beszel.loadbalancer.server.port=8090"
 
   beszel-agent:

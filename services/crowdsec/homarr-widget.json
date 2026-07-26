@@ -1,0 +1,14 @@
+{
+  "$schema": "homarr-custom-widget-v2",
+  "name": "CrowdSec Stats",
+  "description": "Active bans and scenario breakdown from CrowdSec IPS",
+  "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/crowdsec.svg",
+  "url": "http://homelab-crowdsec-stats-api:8088/stats",
+  "authType": "none",
+  "method": "GET",
+  "displayType": "customJsx",
+  "displayConfig": {
+    "type": "customJsx",
+    "template": "<Stack gap=\"md\" p=\"xs\">\n  <Group justify=\"space-between\" align=\"center\">\n    <Title order={4}>CrowdSec</Title>\n    <Badge color={data.healthy ? \"green\" : \"red\"} size=\"sm\" variant=\"light\">\n      {data.healthy ? \"Healthy\" : \"Offline\"}\n    </Badge>\n  </Group>\n  <Group grow>\n    <Card withBorder radius=\"md\" p=\"sm\">\n      <Stack gap={2} align=\"center\">\n        <Text size=\"xs\" c=\"dimmed\">Total Bans</Text>\n        <Text fw={700} size=\"xl\" c=\"red\">{data.total_decisions}</Text>\n      </Stack>\n    </Card>\n    <Card withBorder radius=\"md\" p=\"sm\">\n      <Stack gap={2} align=\"center\">\n        <Text size=\"xs\" c=\"dimmed\">Community</Text>\n        <Text fw={700} size=\"xl\">{data.community_bans}</Text>\n      </Stack>\n    </Card>\n    <Card withBorder radius=\"md\" p=\"sm\">\n      <Stack gap={2} align=\"center\">\n        <Text size=\"xs\" c=\"dimmed\">Local</Text>\n        <Text fw={700} size=\"xl\" c=\"orange\">{data.local_bans}</Text>\n      </Stack>\n    </Card>\n  </Group>\n  <Stack gap=\"xs\">\n    <Text size=\"sm\" fw={600}>Bans by Scenario</Text>\n    {data.scenarios.map((s, i) => (\n      <Group justify=\"space-between\" align=\"center\" gap=\"sm\">\n        <Text size=\"xs\" style={{ width: 110 }}>{s.label}</Text>\n        <Progress value={(s.count / data.total_decisions) * 100} size=\"sm\" color={[\"red\",\"orange\",\"grape\",\"blue\",\"cyan\",\"teal\"][i % 6]} style={{ flex: 1 }} />\n        <Text size=\"xs\" fw={600} style={{ width: 50, textAlign: \"right\" }}>{s.count}</Text>\n      </Group>\n    ))}\n  </Stack>\n</Stack>"
+  }
+}

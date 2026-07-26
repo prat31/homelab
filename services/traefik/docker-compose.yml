@@ -30,5 +30,12 @@ services:
       - "traefik.http.routers.traefik-dashboard.tls=true"
       - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.traefik-dashboard.service=api@internal"
-      - "traefik.http.routers.traefik-dashboard.middlewares=traefik-auth"
+      - "traefik.http.routers.traefik-dashboard.middlewares=traefik-auth,crowdsec"
       - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_AUTH}"
+      # CrowdSec bouncer plugin middleware (shared by all public routers).
+      # Stream mode: decisions are pulled from LAPI every 60s into an in-memory cache.
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.enabled=true"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.crowdsecMode=stream"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.crowdsecLapiScheme=http"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.crowdsecLapiHost=homelab-crowdsec:8080"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.crowdsecLapiKey=${CROWDSEC_BOUNCER_KEY}"

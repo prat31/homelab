@@ -23,6 +23,7 @@ services:
       - "traefik.http.routers.immich.entrypoints=websecure"
       - "traefik.http.routers.immich.tls=true"
       - "traefik.http.routers.immich.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.immich.middlewares=crowdsec"
       - "traefik.http.services.immich.loadbalancer.server.port=2283"
 
   immich-machine-learning:

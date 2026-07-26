@@ -23,4 +23,5 @@ services:
       - "traefik.http.routers.qbittorrent.entrypoints=websecure"
       - "traefik.http.routers.qbittorrent.tls=true"
       - "traefik.http.routers.qbittorrent.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.qbittorrent.middlewares=crowdsec"
       - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"

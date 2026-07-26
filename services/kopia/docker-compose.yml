@@ -36,4 +36,5 @@ services:
       - "traefik.http.routers.kopia.entrypoints=websecure"
       - "traefik.http.routers.kopia.tls=true"
       - "traefik.http.routers.kopia.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.kopia.middlewares=crowdsec"
       - "traefik.http.services.kopia.loadbalancer.server.port=51515"

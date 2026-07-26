@@ -13,6 +13,7 @@ include:
   - ./services/immich/docker-compose.yml
   - ./services/n8n/docker-compose.yml
   - ./services/kopia/docker-compose.yml
+  - ./services/crowdsec/docker-compose.yml
 
 networks:
   homelab:

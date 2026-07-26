@@ -18,4 +18,5 @@ services:
       - "traefik.http.routers.homarr.entrypoints=websecure"
       - "traefik.http.routers.homarr.tls=true"
       - "traefik.http.routers.homarr.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.homarr.middlewares=crowdsec"
       - "traefik.http.services.homarr.loadbalancer.server.port=7575"
