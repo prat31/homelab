@@ -29,11 +29,10 @@ services:
       - homelab
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.n8n.rule=Host(`n8n.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.n8n.rule=Host(`n8n.${DOMAIN_BASE}`) || Host(`${PUBLIC_DOMAIN_PREFIX}n8n.${PUBLIC_DOMAIN_BASE}`)"
       - "traefik.http.routers.n8n.entrypoints=websecure"
       - "traefik.http.routers.n8n.tls=true"
       - "traefik.http.routers.n8n.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.n8n.middlewares=crowdsec"
       - "traefik.http.services.n8n.loadbalancer.server.port=5678"
 
   n8n-postgres:

@@ -49,7 +49,7 @@ data/<service-name>/
 - **Gluetun** (`homelab-gluetun`) — VPN tunnel via PIA, exposes HTTP proxy at `homelab-gluetun:8888`. Used by qBittorrent (network mode) and Prowlarr (HTTP proxy for indexer queries).
 - **Prowlarr tag-based VPN routing** — Prowlarr's global proxy is OFF. An `Http` IndexerProxy named "Gluetun" (host `homelab-gluetun:8888`) is tagged with the `vpn` tag (tag id `1`). Only indexers that carry the `vpn` tag route through Gluetun; untagged indexers use the direct connection. To make a new indexer use the VPN, add the `vpn` tag when creating it (UI: indexer editor → Tags → `vpn`, or POST `/api/v1/indexer` with `"tags":[1]`).
 - **Uptime Kuma** (`homelab-uptime-kuma`) — Service monitoring at `https://uptime.homelab.pratcode.dev`. Every publicly-accessible service must have an HTTP monitor added. Credentials in `.env` (`UPTIME_KUMA_USERNAME`, `UPTIME_KUMA_PASSWORD`, `UPTIME_KUMA_API_KEY`).
-- **CrowdSec** (`homelab-crowdsec`) — Intrusion prevention. Parses Traefik access logs (`/Volumes/homelab_data/homelab/data/traefik/access.log`, mounted read-only) with the `crowdsecurity/traefik` collection and ships decisions to a global `crowdsec` Traefik middleware (stream mode, in-memory cache). The Traefik bouncer plugin (`maxlerebourg/crowdsec-bouncer-traefik-plugin` v1.6.0) is loaded via `experimental.plugins` in `services/traefik/traefik.yml`. The pre-shared bouncer key is `CROWDSEC_BOUNCER_KEY` in `.env` (set as `BOUNCER_KEY_TRAEFIK` on the CrowdSec container so LAPI auto-registers a bouncer named `traefik`). **Every publicly-exposed Traefik router must add `crowdsec` to its `middlewares` label.** LAPI is internal-only (no public domain). Inspect with `docker exec homelab-crowdsec cscli decisions list` / `cscli metrics`.
+- **Cloudflare Tunnel** (`homelab-cloudflared`) — Public ingress from the internet. Runs `cloudflare/cloudflared:2024.10.0` with `network_mode: host` and the remotely-managed tunnel token in `.env` (`CLOUDFLARE_TUNNEL_TOKEN`). The tunnel's remote ingress (managed via the Cloudflare API with the `CLOUDFLARE_TUNNEL_API_TOKEN` token, which has "Cloudflare Tunnel: Edit" permission) routes each public hostname to `https://localhost:443` (Traefik's published HTTPS port on the Docker host) with `noTLSVerify` + `matchSNItoHost`. cloudflared preserves the original Host header so Traefik routes by Host rule. See section 9 for the public hostname scheme. To re-sync the tunnel ingress after adding/removing a public service, run the equivalent of the `PUT /accounts/{acct}/cfd_tunnel/{id}/configurations` call used during setup (see git history of the setup task).
 
 ## 7. Service Integrations
 - When adding a new service, configure all possible integrations with existing services automatically (e.g., Traefik labels, DB connections, monitoring).
@@ -64,6 +64,8 @@ data/<service-name>/
 
 ## 9. Domain Convention
 - Every publicly-accessible service is available at `https://<service>.homelab.pratcode.dev`.
+- Services are **also** mirrored over the public internet (no Tailscale/VPN required) at `https://hl-<service>.pratcode.dev` via the Cloudflare Tunnel (`homelab-cloudflared`). These single-level subdomains are covered by Cloudflare's free Universal SSL cert (`*.pratcode.dev`); do **not** use second-level subdomains like `<service>.homelab-public.pratcode.dev` (they require paid Advanced Certificate Manager).
+- Both hostnames are served by the same Traefik router via a `Host(...) || Host(...)` rule.
 - Traefik labels handle routing and TLS.
 - Internal/backend services don't need domain labels.
 
@@ -73,12 +75,13 @@ When asked to add a new service:
 2. Create `services/<name>/` with config files.
 3. Add service definition to root `docker-compose.yml`.
 4. Create `data/<name>/` with `.gitkeep` if persistent storage needed.
-5. Add Traefik labels for public services (`Host(<service>.homelab.pratcode.dev)`).
+5. Add Traefik labels for public services — private Host `Host(<service>.homelab.pratcode.dev)` and public Host `Host(${PUBLIC_DOMAIN_PREFIX}<service>.${PUBLIC_DOMAIN_BASE})` joined by `||` (see section 9).
 6. Reuse any existing shared DB/queue services instead of creating new ones.
 7. Add Traefik middleware labels for auth if needed.
-8. Wire up integrations programmatically (env vars, config files, APIs, DB queries — exhaust all options before asking the user).
+8. Wire up integrations programmatically (env vars, config files, APIs, DB queries — exhaust all options before asking).
 9. **Add an Uptime Kuma HTTP monitor** for the service (see section 12).
-10. Suggest remaining manual steps to the user.
+10. If the service should be public, also (a) create a proxied CNAME `hl-<service>.pratcode.dev` → `<tunnel-id>.cfargotunnel.com` via the Cloudflare DNS API (`CLOUDFLARE_DNS_API_TOKEN`), and (b) add the hostname to the tunnel's remote ingress via `PUT /accounts/{acct}/cfd_tunnel/{id}/configurations` (`CLOUDFLARE_TUNNEL_API_TOKEN`, service `https://localhost:443` with `noTLSVerify` + `matchSNItoHost`), and (c) add a `... (Tunnel)` Uptime Kuma monitor for the public URL.
+11. Suggest remaining manual steps to the user.
 
 ## 11. Git
 - Never commit. Ever.

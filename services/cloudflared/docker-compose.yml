@@ -1,0 +1,24 @@
+services:
+  # Cloudflare Tunnel client. Connects outbound to Cloudflare and publishes
+  # *.${PUBLIC_DOMAIN_BASE} to the internet using the remotely-managed tunnel
+  # configured in the Cloudflare Zero Trust dashboard (token-based).
+  #
+  # The tunnel's remote ingress routes *.homelab-public.pratcode.dev to
+  # https://localhost:443, so this container uses host networking: localhost:443
+  # is Traefik's published HTTPS port on the Docker host. cloudflared preserves
+  # the original Host header, letting Traefik route by the per-service rules.
+  #
+  # NOTE: Serving *.homelab-public.pratcode.dev over HTTPS at Cloudflare's edge
+  # requires an edge certificate covering that second-level wildcard, which the
+  # free Universal SSL cert (*.pratcode.dev) does not cover. Either enable
+  # Advanced Certificate Manager (wildcard cert) or add per-service Public
+  # Hostnames in the tunnel dashboard so Cloudflare issues per-hostname edge
+  # certs. See the README/manual steps.
+  cloudflared:
+    image: cloudflare/cloudflared:2024.10.0
+    container_name: homelab-cloudflared
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    command: tunnel run

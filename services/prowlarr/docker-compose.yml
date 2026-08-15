@@ -13,9 +13,8 @@ services:
       - homelab
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN_BASE}`) || Host(`${PUBLIC_DOMAIN_PREFIX}prowlarr.${PUBLIC_DOMAIN_BASE}`)"
       - "traefik.http.routers.prowlarr.entrypoints=websecure"
       - "traefik.http.routers.prowlarr.tls=true"
       - "traefik.http.routers.prowlarr.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.prowlarr.middlewares=crowdsec"
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"

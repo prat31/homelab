@@ -17,11 +17,10 @@ services:
       - homelab
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.readarr.rule=Host(`readarr.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.readarr.rule=Host(`readarr.${DOMAIN_BASE}`) || Host(`${PUBLIC_DOMAIN_PREFIX}readarr.${PUBLIC_DOMAIN_BASE}`)"
       - "traefik.http.routers.readarr.entrypoints=websecure"
       - "traefik.http.routers.readarr.tls=true"
       - "traefik.http.routers.readarr.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.readarr.middlewares=crowdsec"
       - "traefik.http.services.readarr.loadbalancer.server.port=8787"
 
   # qBittorrent auth-compat proxy for Readarr (rewrite v5 204 -> 200 "Ok.")

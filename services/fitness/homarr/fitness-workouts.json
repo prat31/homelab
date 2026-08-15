@@ -1,0 +1,22 @@
+{
+  "$schema": "homarr-custom-widget-v2",
+  "id": "fitness-workouts",
+  "name": "Recent workouts",
+  "description": "Latest Garmin-priority workouts",
+  "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons@master/svg/garmin.svg",
+  "url": "https://fitness.homelab.pratcode.dev/api/widgets/workouts",
+  "authType": "apiKeyQuery",
+  "headerName": "api_key",
+  "method": "GET",
+  "displayType": "table",
+  "displayConfig": {
+    "type": "table",
+    "dataJsonPath": "$.workouts",
+    "columns": [
+      { "header": "Date", "jsonPath": "$.local_date" },
+      { "header": "Type", "jsonPath": "$.exercise_name" },
+      { "header": "Min", "jsonPath": "$.minutes" },
+      { "header": "HR", "jsonPath": "$.avg_hr" }
+    ]
+  }
+}

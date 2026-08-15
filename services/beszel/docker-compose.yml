@@ -11,11 +11,10 @@ services:
       - homelab
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.beszel.rule=Host(`beszel.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.beszel.rule=Host(`beszel.${DOMAIN_BASE}`) || Host(`${PUBLIC_DOMAIN_PREFIX}beszel.${PUBLIC_DOMAIN_BASE}`)"
       - "traefik.http.routers.beszel.entrypoints=websecure"
       - "traefik.http.routers.beszel.tls=true"
       - "traefik.http.routers.beszel.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.beszel.middlewares=crowdsec"
       - "traefik.http.services.beszel.loadbalancer.server.port=8090"
 
   beszel-agent:

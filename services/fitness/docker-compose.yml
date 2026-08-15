@@ -1,0 +1,29 @@
+services:
+  fitness:
+    build: .
+    image: homelab-fitness:1.0.0
+    container_name: homelab-fitness
+    restart: unless-stopped
+    environment:
+      - FITNESS_DATA_DIR=/data
+      - FITNESS_TZ=${FITNESS_TZ:-Asia/Kolkata}
+      - FITNESS_API_KEY=${FITNESS_API_KEY}
+      - FITNESS_DOMAIN=fitness.${DOMAIN_BASE}
+      - PUBLIC_FITNESS_DOMAIN=${PUBLIC_DOMAIN_PREFIX}fitness.${PUBLIC_DOMAIN_BASE}
+      - DRIVE_FOLDER_ID=${FITNESS_DRIVE_FOLDER_ID:-}
+      - GOOGLE_OAUTH_CLIENT_ID=${GOOGLE_OAUTH_CLIENT_ID:-}
+      - GOOGLE_OAUTH_CLIENT_SECRET=${GOOGLE_OAUTH_CLIENT_SECRET:-}
+      - GOOGLE_OAUTH_REFRESH_TOKEN=${GOOGLE_OAUTH_REFRESH_TOKEN:-}
+      - GOOGLE_SERVICE_ACCOUNT_JSON=${GOOGLE_SERVICE_ACCOUNT_JSON:-}
+      - DRIVE_POLL_HOUR=${FITNESS_DRIVE_POLL_HOUR:-6}
+    volumes:
+      - /Volumes/homelab_data/homelab/data/fitness:/data
+    networks:
+      - homelab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fitness.rule=Host(`fitness.${DOMAIN_BASE}`) || Host(`${PUBLIC_DOMAIN_PREFIX}fitness.${PUBLIC_DOMAIN_BASE}`)"
+      - "traefik.http.routers.fitness.entrypoints=websecure"
+      - "traefik.http.routers.fitness.tls=true"
+      - "traefik.http.routers.fitness.tls.certresolver=letsencrypt"
+      - "traefik.http.services.fitness.loadbalancer.server.port=8080"

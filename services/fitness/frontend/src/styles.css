@@ -1,0 +1,43 @@
+:root {
+  color-scheme: dark;
+  --bg: #0f1115;
+  --panel: #171b22;
+  --line: #2a3140;
+  --text: #e8edf5;
+  --muted: #8b95a7;
+  --accent: #fa5252;
+  --up: #69db7c;
+  --down: #ff6b6b;
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); }
+
+a { color: inherit; text-decoration: none; }
+
+.layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+.nav { border-right: 1px solid var(--line); padding: 24px 16px; background: #12151b; }
+.nav h1 { margin: 0 0 24px; font-size: 18px; letter-spacing: 0.08em; text-transform: uppercase; }
+.nav a { display: block; padding: 10px 12px; border-radius: 8px; color: var(--muted); }
+.nav a.active, .nav a:hover { background: var(--panel); color: var(--text); }
+.page { padding: 28px 32px 48px; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+h2 { margin: 0; font-size: 22px; }
+.muted { color: var(--muted); }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+.card .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+.card .value { font-size: 28px; font-weight: 650; margin-top: 8px; }
+.delta.up { color: var(--up); }
+.delta.down { color: var(--down); }
+.chart { height: 280px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); font-size: 14px; }
+button, select, input[type="file"] {
+  background: var(--panel); color: var(--text); border: 1px solid var(--line);
+  border-radius: 8px; padding: 8px 12px;
+}
+button { cursor: pointer; }
+button.primary { background: var(--accent); border-color: var(--accent); color: white; }
+.range button.active { background: var(--accent); border-color: var(--accent); }

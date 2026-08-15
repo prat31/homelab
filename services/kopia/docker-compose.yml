@@ -32,9 +32,8 @@ services:
       - homelab
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.kopia.rule=Host(`kopia.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.kopia.rule=Host(`kopia.${DOMAIN_BASE}`) || Host(`${PUBLIC_DOMAIN_PREFIX}kopia.${PUBLIC_DOMAIN_BASE}`)"
       - "traefik.http.routers.kopia.entrypoints=websecure"
       - "traefik.http.routers.kopia.tls=true"
       - "traefik.http.routers.kopia.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.kopia.middlewares=crowdsec"
       - "traefik.http.services.kopia.loadbalancer.server.port=51515"

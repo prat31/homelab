@@ -9,9 +9,8 @@ services:
       - homelab
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.uptime-kuma.rule=Host(`uptime.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.uptime-kuma.rule=Host(`uptime.${DOMAIN_BASE}`) || Host(`${PUBLIC_DOMAIN_PREFIX}uptime.${PUBLIC_DOMAIN_BASE}`)"
       - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
       - "traefik.http.routers.uptime-kuma.tls=true"
       - "traefik.http.routers.uptime-kuma.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.uptime-kuma.middlewares=crowdsec"
       - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"

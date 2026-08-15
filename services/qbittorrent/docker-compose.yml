@@ -19,9 +19,8 @@ services:
       - homelab
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.${DOMAIN_BASE}`) || Host(`${PUBLIC_DOMAIN_PREFIX}qbittorrent.${PUBLIC_DOMAIN_BASE}`)"
       - "traefik.http.routers.qbittorrent.entrypoints=websecure"
       - "traefik.http.routers.qbittorrent.tls=true"
       - "traefik.http.routers.qbittorrent.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.qbittorrent.middlewares=crowdsec"
       - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"

@@ -1,0 +1,23 @@
+{
+  "$schema": "homarr-custom-widget-v2",
+  "id": "fitness-week",
+  "name": "Fitness this week",
+  "description": "This week versus last week",
+  "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons@master/svg/garmin.svg",
+  "url": "https://fitness.homelab.pratcode.dev/api/widgets/week",
+  "authType": "apiKeyQuery",
+  "headerName": "api_key",
+  "method": "GET",
+  "displayType": "keyValue",
+  "displayConfig": {
+    "type": "keyValue",
+    "items": [
+      { "label": "Steps", "jsonPath": "$.steps", "unit": "" },
+      { "label": "Steps last week", "jsonPath": "$.steps_last", "unit": "" },
+      { "label": "Steps wow", "jsonPath": "$.steps_wow", "unit": "" },
+      { "label": "Distance", "jsonPath": "$.km", "unit": "km" },
+      { "label": "Sleep hours", "jsonPath": "$.sleep_hours", "unit": "h" },
+      { "label": "Workout min", "jsonPath": "$.workouts_min", "unit": "min" }
+    ]
+  }
+}

@@ -44,9 +44,3 @@ accessLog:
   filePath: /data/access.log
   format: json
   bufferingSize: 100
-
-experimental:
-  plugins:
-    bouncer:
-      moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
-      version: v1.6.0

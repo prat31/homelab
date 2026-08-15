@@ -14,9 +14,8 @@ services:
       - homelab
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN_BASE}`) || Host(`${PUBLIC_DOMAIN_PREFIX}radarr.${PUBLIC_DOMAIN_BASE}`)"
       - "traefik.http.routers.radarr.entrypoints=websecure"
       - "traefik.http.routers.radarr.tls=true"
       - "traefik.http.routers.radarr.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.radarr.middlewares=crowdsec"
       - "traefik.http.services.radarr.loadbalancer.server.port=7878"

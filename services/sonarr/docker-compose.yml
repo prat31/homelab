@@ -14,9 +14,8 @@ services:
       - homelab
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN_BASE}`)"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN_BASE}`) || Host(`${PUBLIC_DOMAIN_PREFIX}sonarr.${PUBLIC_DOMAIN_BASE}`)"
       - "traefik.http.routers.sonarr.entrypoints=websecure"
       - "traefik.http.routers.sonarr.tls=true"
       - "traefik.http.routers.sonarr.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.sonarr.middlewares=crowdsec"
       - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
