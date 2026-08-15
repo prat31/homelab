@@ -1,6 +1,6 @@
 services:
   gluetun:
-    image: qmcgaw/gluetun:v3.40
+    image: qmcgaw/gluetun:v3.41.3
     container_name: homelab-gluetun
     restart: unless-stopped
     cap_add:
@@ -13,10 +13,12 @@ services:
       - SERVER_REGIONS=${PIA_REGION}
       - HTTPPROXY=on
       - HTTPPROXY_PORT=8888
+      - UPDATER_PERIOD=24h
     ports:
       - 8888:8888
       - "8000:8000/tcp"
     volumes:
+      - /Volumes/homelab_data/homelab/data/gluetun:/gluetun
       - ./config.toml:/gluetun/auth/config.toml:ro
     networks:
       - homelab

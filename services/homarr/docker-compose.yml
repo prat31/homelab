@@ -1,8 +1,10 @@
 services:
   homarr:
-    image: ghcr.io/homarr-labs/homarr:v1.70.0
+    image: ghcr.io/homarr-labs/homarr:v1.75.0
     container_name: homelab-homarr
     restart: unless-stopped
+    depends_on:
+      - beszel
     volumes:
       - /Users/prat/.docker/run/docker.sock:/var/run/docker.sock:ro
       - /Volumes/homelab_data/homelab/data/homarr:/appdata

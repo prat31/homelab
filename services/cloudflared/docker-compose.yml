@@ -15,7 +15,7 @@ services:
   # Hostnames in the tunnel dashboard so Cloudflare issues per-hostname edge
   # certs. See the README/manual steps.
   cloudflared:
-    image: cloudflare/cloudflared:2024.10.0
+    image: cloudflare/cloudflared:2026.8.2
     container_name: homelab-cloudflared
     restart: unless-stopped
     network_mode: host

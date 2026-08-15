@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v3.7
+    image: traefik:v3.7.10
     container_name: homelab-traefik
     restart: unless-stopped
     security_opt:

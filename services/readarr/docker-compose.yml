@@ -26,7 +26,7 @@ services:
   # qBittorrent auth-compat proxy for Readarr (rewrite v5 204 -> 200 "Ok.")
   # Remove once Readarr merges the qBittorrent v5 auth fix upstream.
   qbit-proxy:
-    image: python:3.12.11-alpine3.22
+    image: python:3.12-alpine
     container_name: homelab-readarr-qbit-proxy
     restart: unless-stopped
     volumes:

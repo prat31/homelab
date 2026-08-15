@@ -1,0 +1,29 @@
+services:
+  healthsight:
+    image: ghcr.io/prat31/healthsight:v1.0.5
+    container_name: homelab-healthsight
+    restart: unless-stopped
+    environment:
+      - HEALTHSIGHT_DATA_DIR=/data
+      - HEALTHSIGHT_EXPORTS_DIR=/exports
+      - HEALTHSIGHT_TZ=${HEALTHSIGHT_TZ:-Asia/Kolkata}
+      - HEALTHSIGHT_API_KEY=${HEALTHSIGHT_API_KEY}
+      - DATA_SOURCE=${HEALTHSIGHT_DATA_SOURCE:-drive}
+      - DRIVE_FOLDER_ID=${HEALTHSIGHT_DRIVE_FOLDER_ID:-}
+      - GOOGLE_OAUTH_CLIENT_ID=${GOOGLE_OAUTH_CLIENT_ID:-}
+      - GOOGLE_OAUTH_CLIENT_SECRET=${GOOGLE_OAUTH_CLIENT_SECRET:-}
+      - GOOGLE_OAUTH_REFRESH_TOKEN=${GOOGLE_OAUTH_REFRESH_TOKEN:-}
+      - GOOGLE_SERVICE_ACCOUNT_JSON=${GOOGLE_SERVICE_ACCOUNT_JSON:-}
+      - DRIVE_POLL_HOUR=${HEALTHSIGHT_DRIVE_POLL_HOUR:-6}
+    volumes:
+      - /Volumes/homelab_data/homelab/data/healthsight:/data
+      - /Volumes/homelab_data/homelab/data/healthsight/exports:/exports
+    networks:
+      - homelab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.healthsight.rule=Host(`healthsight.${DOMAIN_BASE}`) || Host(`${PUBLIC_DOMAIN_PREFIX}healthsight.${PUBLIC_DOMAIN_BASE}`)"
+      - "traefik.http.routers.healthsight.entrypoints=websecure"
+      - "traefik.http.routers.healthsight.tls=true"
+      - "traefik.http.routers.healthsight.tls.certresolver=letsencrypt"
+      - "traefik.http.services.healthsight.loadbalancer.server.port=8080"

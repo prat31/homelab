@@ -14,7 +14,7 @@ include:
   - ./services/n8n/docker-compose.yml
   - ./services/kopia/docker-compose.yml
   - ./services/cloudflared/docker-compose.yml
-  - ./services/fitness/docker-compose.yml
+  - ./services/healthsight/docker-compose.yml
 
 networks:
   homelab:

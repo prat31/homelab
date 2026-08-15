@@ -1,6 +1,6 @@
 services:
   n8n:
-    image: n8nio/n8n:2.30.7
+    image: n8nio/n8n:2.35.3
     container_name: homelab-n8n
     restart: unless-stopped
     environment:
@@ -36,7 +36,7 @@ services:
       - "traefik.http.services.n8n.loadbalancer.server.port=5678"
 
   n8n-postgres:
-    image: postgres:16-alpine
+    image: postgres:16.15-alpine
     container_name: homelab-n8n-postgres
     restart: unless-stopped
     environment:

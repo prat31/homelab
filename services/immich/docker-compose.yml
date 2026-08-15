@@ -37,7 +37,7 @@ services:
       - homelab
 
   immich-redis:
-    image: docker.io/valkey/valkey:9
+    image: docker.io/valkey/valkey:9.1.1
     container_name: homelab-immich-redis
     restart: always
     healthcheck:
