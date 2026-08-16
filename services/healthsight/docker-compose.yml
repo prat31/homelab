@@ -1,6 +1,6 @@
 services:
   healthsight:
-    image: ghcr.io/prat31/healthsight:v1.0.5
+    image: ghcr.io/prat31/healthsight:v1.0.7
     container_name: homelab-healthsight
     restart: unless-stopped
     environment:
